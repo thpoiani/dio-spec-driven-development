@@ -1,0 +1,1399 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Spec-Driven Development — Curso DIO</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.2/dist/reveal.css">
+
+<style>
+/* ============================================================
+   DIO · deck base — tokens de marca
+   Fonte da verdade: skills/dio-brand/assets/tokens.css
+   ============================================================ */
+:root{
+  --brand:#E5E145;
+  --ink:#0C131E;
+
+  --bg:#0C0C0C;
+  --fg:#F2F2EE;
+  --muted:#8A8A84;
+  --surface:#151514;
+  --surface-2:#1C1C1A;
+  --line:#2B2B28;
+  --accent:var(--brand);
+  --on-brand:#0C0C0C;
+
+  --font-display:'Space Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+
+  --radius:10px;
+  --pad:64px;
+}
+html[data-theme="light"]{
+  --bg:#F6F6F1;
+  --fg:#0C131E;
+  --muted:#5F5F59;
+  --surface:#FFFFFF;
+  --surface-2:#EDEDE6;
+  --line:#D8D8CE;
+  --accent:var(--ink);
+  --on-brand:#0C131E;
+}
+
+*{box-sizing:border-box}
+
+/* ---------- reveal: reset e escala ---------- */
+.reveal-viewport{background:var(--bg)}
+.reveal{font-family:var(--font-body);font-size:24px;color:var(--fg);font-weight:400}
+.reveal .slides{text-align:left}
+.reveal .controls,.reveal .slide-number{display:none}
+.reveal .progress{height:3px;color:var(--brand);background:var(--line)}
+.reveal .progress span{background:var(--brand)}
+.reveal a{color:inherit;text-decoration:none}
+
+/* ---------- slide ----------
+   O reveal aplica display:block inline na seção atual, então o layout do slide
+   é feito com filhos absolutos dentro de um canvas fixo de 1280×720. */
+.reveal .slides section.slide{
+  position:absolute;
+  top:0;
+  left:0;
+  display:block;
+  width:1280px;
+  height:720px;
+  padding:0;
+  background:var(--bg);
+  color:var(--fg);
+  text-align:left;
+  overflow:hidden;
+}
+.reveal .slides section.slide::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:radial-gradient(circle,var(--line) 1px,transparent 1px);
+  background-size:30px 30px;
+  opacity:.5;
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 88% -5%,#000 0%,transparent 70%);
+  mask-image:radial-gradient(ellipse 70% 60% at 88% -5%,#000 0%,transparent 70%);
+  z-index:0;
+}
+.slide__top,.slide__foot,.slide__main{position:relative;z-index:2}
+
+.slide__top{
+  position:absolute;
+  top:38px;
+  left:var(--pad);
+  right:var(--pad);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:30px;
+  z-index:2;
+}
+.top__event{
+  font:500 11px/1 var(--font-mono);
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.logo{display:block;color:var(--fg)}
+.logo--sm{width:54px;height:22px}
+.logo--lg{width:96px;height:39px}
+
+.slide__foot{
+  position:absolute;
+  bottom:26px;
+  left:var(--pad);
+  right:var(--pad);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font:500 11px/1 var(--font-mono);
+  letter-spacing:.08em;
+  color:var(--muted);
+  z-index:2;
+}
+.slide__foot .pager{display:flex;gap:6px;align-items:baseline}
+.slide__foot .pager b{color:var(--fg);font-weight:500}
+.slide__foot .pager i{font-style:normal;opacity:.5}
+.slide__foot--only{justify-content:flex-end}
+
+.slide__main{
+  position:absolute;
+  top:86px;
+  bottom:62px;
+  left:var(--pad);
+  right:var(--pad);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:22px;
+  min-height:0;
+  z-index:2;
+}
+
+/* ---------- tipografia ---------- */
+.kicker{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0;
+  font:500 12px/1 var(--font-mono);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+.kicker::before{content:"//";opacity:.55;letter-spacing:0}
+
+h1.title,h2.title,h3.subtitle{
+  margin:0;
+  font-family:var(--font-display);
+  font-weight:600;
+  letter-spacing:-.03em;
+  color:var(--fg);
+}
+h1.title{font-size:82px;line-height:.98;letter-spacing:-.035em;max-width:1000px}
+h2.title{font-size:46px;line-height:1.06;max-width:940px}
+h3.subtitle{font-size:26px;line-height:1.3;font-weight:500;color:var(--muted)}
+
+p{margin:0;font-size:24px;line-height:1.5}
+.lead{font-size:27px;line-height:1.45;color:var(--fg);max-width:840px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--font-mono)}
+.small{font-size:15px;line-height:1.5}
+
+/* ---------- listas ---------- */
+.bullets{list-style:none;margin:0;padding:0;display:grid;gap:16px;max-width:980px}
+.bullets li{position:relative;padding-left:34px;font-size:24px;line-height:1.45}
+.bullets li::before{
+  content:"";
+  position:absolute;left:0;top:.66em;
+  width:18px;height:2px;background:var(--brand);
+}
+.bullets--tight{gap:10px}
+.bullets--tight li{font-size:21px}
+
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:14px;max-width:980px}
+.checks li{position:relative;padding-left:38px;font-size:23px;line-height:1.4}
+.checks li::before{
+  content:"✓";
+  position:absolute;left:0;top:-2px;
+  font:600 20px var(--font-mono);
+  color:var(--brand);
+}
+
+.agenda{
+  list-style:none;
+  margin:0;padding:0;
+  counter-reset:ag;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px 64px;
+}
+.agenda li{
+  counter-increment:ag;
+  position:relative;
+  padding:0 0 14px 46px;
+  border-bottom:1px solid var(--line);
+  font-size:22px;
+  line-height:1.35;
+}
+.agenda li::before{
+  content:counter(ag,decimal-leading-zero);
+  position:absolute;left:0;top:4px;
+  font:500 13px var(--font-mono);
+  color:var(--brand);
+  letter-spacing:.08em;
+}
+
+/* ---------- capa ---------- */
+.cover__top{
+  position:absolute;top:44px;left:var(--pad);right:var(--pad);
+  display:flex;align-items:flex-start;justify-content:space-between;z-index:2;
+}
+.cover__main{
+  position:absolute;top:112px;bottom:206px;left:var(--pad);right:var(--pad);
+  display:flex;flex-direction:column;justify-content:center;gap:24px;
+  max-width:1000px;z-index:2;
+}
+.cover__meta{
+  position:absolute;bottom:44px;left:var(--pad);right:var(--pad);
+  display:flex;justify-content:space-between;align-items:flex-end;gap:40px;
+  border-top:1px solid var(--line);padding-top:20px;z-index:2;
+}
+.meta__label{
+  font:500 11px var(--font-mono);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:7px;
+}
+.meta__value{font:500 19px/1.2 var(--font-body);color:var(--fg)}
+.meta__sub{font-size:15px;color:var(--muted);margin-top:2px}
+.cover__ring{
+  position:absolute;right:16px;top:96px;width:300px;height:300px;
+  color:var(--brand);opacity:.14;z-index:1;pointer-events:none;
+}
+
+/* ---------- divisor de seção ---------- */
+.section__num{
+  position:absolute;right:28px;top:50%;transform:translateY(-50%);
+  font:700 196px/1 var(--font-display);
+  letter-spacing:-.06em;
+  color:transparent;
+  -webkit-text-stroke:2px var(--line);
+  z-index:1;pointer-events:none;
+}
+.slide--section .slide__main{gap:14px;z-index:2}
+
+/* ---------- bio ---------- */
+.bio{display:grid;grid-template-columns:250px 1fr;gap:56px;align-items:center}
+.bio__photo{
+  width:230px;height:230px;border-radius:50%;
+  background:var(--surface-2);border:1px solid var(--line);
+  display:grid;place-items:center;
+  font:600 62px var(--font-display);color:var(--muted);
+  overflow:hidden;
+}
+.bio__photo img{width:100%;height:100%;object-fit:cover}
+.bio__body{display:grid;gap:18px}
+
+/* ---------- duas colunas ---------- */
+.cols{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
+.cols__left{display:grid;gap:16px}
+.stack{display:grid;gap:10px}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 20px;display:grid;gap:4px;
+}
+.card__label{font:500 11px var(--font-mono);letter-spacing:.14em;color:var(--brand)}
+.card h3{margin:0;font:600 20px/1.2 var(--font-display);letter-spacing:-.01em}
+.card p{font-size:15px;line-height:1.45;color:var(--muted)}
+
+/* ---------- código ---------- */
+/* Código e terminal são sempre escuros, nos dois temas: é uma decisão de design
+   (contraste de strings amarelas) e evita código ilegível no tema claro. */
+.code-card{
+  background:#0E0E0D;
+  border:1px solid #2B2B28;
+  border-radius:12px;
+  overflow:hidden;
+  max-width:960px;
+}
+.code-card__bar{
+  display:flex;align-items:center;gap:7px;
+  padding:10px 16px;
+  border-bottom:1px solid #2B2B28;
+  background:#181816;
+}
+.dot{width:8px;height:8px;border-radius:50%;background:#3A3A36}
+.code-card__name{margin-left:10px;font:500 11px var(--font-mono);color:#8A8A84;letter-spacing:.04em}
+.reveal pre{margin:0;width:100%;box-shadow:none}
+.reveal pre code{
+  display:block;
+  padding:20px 22px;
+  background:transparent;
+  font-family:var(--font-mono);
+  font-size:18px;
+  line-height:1.55;
+  max-height:none;
+  color:#F2F2EE;
+}
+.hljs-comment{color:#6E6E66;font-style:italic}
+.hljs-string{color:var(--brand)}
+.hljs-keyword,.hljs-built_in,.hljs-literal{color:#8FD3FF}
+.hljs-number{color:#FFA26B}
+.hljs-title,.hljs-function .hljs-title,.hljs-section{color:#F2F2EE;font-weight:600}
+.hljs-attr,.hljs-attribute{color:#B6E39A}
+.hljs-bullet,.hljs-symbol{color:var(--brand)}
+
+/* ---------- terminal ---------- */
+.term{
+  max-width:940px;
+  border:1px solid #2B2B28;
+  border-radius:12px;
+  overflow:hidden;
+  background:#0E0E0D;
+}
+.term__bar{
+  display:flex;align-items:center;gap:7px;
+  padding:10px 16px;background:#181816;
+  border-bottom:1px solid #2B2B28;
+  font:500 11px var(--font-mono);color:#8A8A84;letter-spacing:.08em;
+}
+.term__body{padding:20px 22px;display:grid;gap:10px;font:400 19px/1.55 var(--font-mono);color:#F2F2EE}
+.term__body .p{color:var(--brand);margin-right:10px;user-select:none}
+.term__body .out{color:var(--muted);padding-left:26px}
+.term__body .ok{color:#B6E39A}
+
+/* ---------- destaque: citação ou número ---------- */
+.quote{
+  margin:0;max-width:940px;
+  font:500 46px/1.16 var(--font-display);
+  letter-spacing:-.025em;
+}
+.quote::before{
+  content:"“";
+  display:block;
+  font:600 90px/0.6 var(--font-display);
+  color:var(--brand);
+  margin-bottom:10px;
+}
+.quote cite{
+  display:block;margin-top:26px;
+  font:400 17px/1.4 var(--font-body);
+  font-style:normal;color:var(--muted);
+}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;align-items:end}
+.stat{display:grid;gap:8px;padding-top:16px;border-top:2px solid var(--brand)}
+.stat b{
+  font:600 76px/1 var(--font-display);
+  letter-spacing:-.045em;
+}
+.stat b span{font-size:.42em;letter-spacing:0;margin-left:2px;color:var(--muted)}
+.stat p{font-size:16px;line-height:1.4;color:var(--muted)}
+
+/* ---------- figura ---------- */
+figure{margin:0;display:grid;gap:12px;max-width:1000px}
+.figure__frame{
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--surface);
+  padding:18px;display:grid;place-items:center;
+  min-height:300px;
+}
+.figure__frame img{max-width:100%;max-height:340px;display:block}
+.figure__frame svg{width:100%;height:auto;display:block}
+figcaption{
+  font:500 12px/1.4 var(--font-mono);
+  color:var(--muted);letter-spacing:.04em;
+}
+
+/* ---------- exercício ---------- */
+.exercise{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-left:3px solid var(--brand);
+  border-radius:var(--radius);
+  padding:26px 32px;
+  display:grid;gap:18px;
+  max-width:940px;
+}
+.exercise__meta{
+  font:500 11px var(--font-mono);
+  letter-spacing:.16em;text-transform:uppercase;color:var(--brand);
+}
+.exercise h3{
+  margin:0;font:600 30px/1.15 var(--font-display);letter-spacing:-.02em;
+}
+.steps{counter-reset:st;list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.steps li{
+  counter-increment:st;
+  position:relative;padding-left:38px;
+  font-size:19px;line-height:1.4;
+}
+.steps li::before{
+  content:counter(st);
+  position:absolute;left:0;top:1px;
+  width:22px;height:22px;border-radius:50%;
+  display:grid;place-items:center;
+  font:500 11px var(--font-mono);
+  color:var(--on-brand);background:var(--brand);
+}
+.exercise__goal{
+  border-top:1px solid var(--line);padding-top:14px;
+  font-size:16px;line-height:1.45;color:var(--muted);
+}
+
+/* ---------- referências ---------- */
+.refs{display:grid;max-width:980px;border-top:1px solid var(--line)}
+.refs a{
+  display:grid;grid-template-columns:1fr auto 16px;
+  align-items:baseline;gap:24px;
+  padding:16px 2px;
+  border-bottom:1px solid var(--line);
+  transition:padding-left .15s ease;
+}
+.refs a:hover{padding-left:8px}
+.refs a:hover .refs__label{color:var(--brand)}
+.refs__label{font:500 21px/1.3 var(--font-body)}
+.refs__url{font:400 13px var(--font-mono);color:var(--muted)}
+.refs a::after{content:"↗";font-size:15px;color:var(--muted)}
+
+/* ---------- encerramento ---------- */
+.closing__main{
+  position:absolute;top:96px;left:var(--pad);right:var(--pad);
+  display:flex;flex-direction:column;gap:16px;z-index:2;
+}
+.closing__title{
+  margin:0;font:600 96px/1 var(--font-display);letter-spacing:-.045em;color:var(--brand);
+}
+.slide--closing .refs{
+  position:absolute;left:var(--pad);right:var(--pad);bottom:118px;margin:0;
+}
+.closing__foot{
+  position:absolute;left:var(--pad);right:var(--pad);bottom:38px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--line);padding-top:16px;z-index:2;
+}
+/* ---------- diagrama ---------- */
+.diagram .node{fill:var(--surface);stroke:var(--line);stroke-width:1}
+.diagram .num{fill:var(--brand);font-family:var(--font-mono);font-size:13px;letter-spacing:.12em}
+.diagram .lbl{fill:var(--fg);font-family:var(--font-display);font-size:22px;font-weight:600}
+.diagram .arrow{fill:none;stroke:var(--muted);stroke-width:1.5}
+.diagram .hint{fill:var(--muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+
+/* ---------- light theme ---------- */
+html[data-theme="light"] .bullets li::before,
+html[data-theme="light"] .stat,
+html[data-theme="light"] .exercise{border-color:var(--line)}
+html[data-theme="light"] .exercise{border-left-color:var(--brand)}
+html[data-theme="light"] .closing__title{color:var(--ink)}
+html[data-theme="light"] .quote::before{color:var(--brand)}
+html[data-theme="light"] .hljs-comment{color:#8A8A80}
+
+/* ---------- print / PDF ---------- */
+@media print{
+  .reveal .slides section.slide{height:720px;break-inside:avoid}
+  .slide::after{display:none}
+}
+
+/* Acessibilidade: quem pede menos movimento no sistema não recebe transição. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    transition-duration:.01ms !important;
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Símbolos de marca: um logo e um anel, reaproveitados por todos os slides -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="dio-logo" viewBox="0 0 98 40">
+    <path fill="currentColor" d="M97.058 32.674a6.446 6.446 0 01-3.963 5.96 6.428 6.428 0 01-7.016-1.389 6.443 6.443 0 014.545-10.999c1.704 0 3.338.678 4.544 1.883a6.446 6.446 0 011.89 4.545zM77.737 35.135a16.805 16.805 0 004.415-21.243 16.778 16.778 0 00-8.662-7.637 16.757 16.757 0 00-11.54-.227 16.776 16.776 0 00-8.954 7.292 16.805 16.805 0 003.58 21.4 16.762 16.762 0 0021.16.415zM33.963 20.765V0A12.847 12.847 0 0023 6.138 16.751 16.751 0 003.948 11.66a16.796 16.796 0 00-.458 19.85 16.77 16.77 0 008.342 6.278 16.752 16.752 0 0018.921-5.959 16.797 16.797 0 003.25-9.927c0-.384-.02-.762-.04-1.138zM42.208 12.934a6.387 6.387 0 00-4.517 1.873 6.4 6.4 0 00-1.871 4.522v19.364c3.41 0 6.68-1.356 9.091-3.77a12.878 12.878 0 003.766-9.101v-6.405a6.487 6.487 0 00-1.894-4.582 6.473 6.473 0 00-4.575-1.901z"/>
+    <path fill="currentColor" d="M48.687 6.44a6.445 6.445 0 01-3.971 5.95 6.427 6.427 0 01-7.012-1.396A6.443 6.443 0 0142.254 0c1.706 0 3.342.68 4.548 1.887a6.447 6.447 0 011.885 4.553z"/>
+  </symbol>
+  <symbol id="dio-dots" viewBox="0 0 100 100">
+    <g fill="currentColor">
+      <circle cx="90" cy="50" r="5"/><circle cx="80.64" cy="75.71" r="5"/>
+      <circle cx="56.95" cy="89.39" r="5"/><circle cx="30" cy="84.64" r="5"/>
+      <circle cx="12.41" cy="63.68" r="5"/><circle cx="12.41" cy="36.32" r="5"/>
+      <circle cx="30" cy="15.36" r="5"/><circle cx="56.95" cy="10.61" r="5"/>
+      <circle cx="80.64" cy="24.29" r="5"/>
+    </g>
+  </symbol>
+</svg>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- 01 · CAPA --><section class="slide slide--cover" data-chrome="none">
+  <div class="cover__top">
+    <svg class="logo logo--lg" viewBox="0 0 98 40" role="img" aria-label="DIO"><use href="#dio-logo"/></svg>
+  </div>
+  <div class="cover__main">
+    <h1 class="title" data-bind="title"></h1>
+    <p class="lead" data-bind="subtitle"></p>
+  </div>
+  <div class="cover__meta">
+    <div>
+      <p class="meta__label">Expert</p>
+      <p class="meta__value" data-bind="instructor.name"></p>
+      <p class="meta__sub" data-bind="instructor.role"></p>
+    </div>
+    <div>
+      <p class="meta__label">Quando</p>
+      <p class="meta__value" data-bind="date"></p>
+    </div>
+  </div>
+  <svg class="cover__ring" viewBox="0 0 100 100" aria-hidden="true"><use href="#dio-dots"/></svg>
+  <aside class="notes">
+    Abra com a promessa do curso em uma frase. A navegação por número serve
+    de roteiro de gravação — cada bloco do deck cobre um trecho do vídeo final.
+  </aside>
+</section>
+
+<!-- 02 · BIO --><section class="slide" data-chrome="full">
+  <div class="slide__main bio">
+    <div class="bio__photo"><img src="https://github.com/thpoiani.png?size=400" alt="Thiago Poiani"></div>
+    <div class="bio__body">
+      <h2 class="title">Thiago Poiani</h2>
+      <ul class="bullets bullets--tight">
+        <li>Principal Software Engineer @ Skip.</li>
+        <li><span class="mono">@thpoiani</span> no LinkedIn e redes.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    Duas linhas bastam: cargo e contato. O estudo público no repositório
+    fala por si.
+  </aside>
+</section>
+
+<!-- 03 · AGENDA --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">Roteiro</p>
+    <h2 class="title">O que vamos discutir</h2>
+    <ol class="agenda">
+      <li>O prompt vago e o que ele revela</li>
+      <li>O que é SDD — e seus três níveis</li>
+      <li>Frameworks e agentes</li>
+      <li>A mesma spec, <em>resultados diferentes</em></li>
+      <li>Encerramento e onde continuar</li>
+    </ol>
+  </div>
+  <aside class="notes">
+    Marque o tempo de cada bloco — a aula fecha em 60 minutos.
+  </aside>
+</section>
+
+<!-- 04 · DIVISOR 01 --><section class="slide slide--section" data-chrome="min">
+  <div class="slide__main">
+    <h2 class="title">O prompt que todo dev<br>já <i>vibecodou</i></h2>
+  </div>
+  <span class="section__num" aria-hidden="true">01</span>
+  <aside class="notes">
+    Vamos começar pelo fracasso — e aprender com ele.
+  </aside>
+</section>
+
+<!-- 05 · CITAÇÃO — O PROMPT --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <blockquote class="quote">
+      Crie uma função que receba um carrinho e um código de cupom e aplique o desconto no valor total.
+      <cite>— acompanhado dos constraints do estudo: "Projeto de estudo: TypeScript em strict mode, Vitest como test runner, código pequeno e legível, funções puras, sem dependências externas"</cite>
+    </blockquote>
+  </div>
+  <aside class="notes">
+    Deixe a plateia ler o prompt inteiro. Ele volta idêntico em todos os
+    experimentos — é a única constante do estudo.
+  </aside>
+</section>
+
+
+<!-- 06 · FIGURA VÍDEO — BASELINE --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">A execução: o prompt vago, sem método</h2>
+    <div style="display:flex;gap:20px;align-items:stretch">
+      <figure style="flex:1.6;min-width:0">
+        <div class="figure__frame">
+          <video controls preload="metadata" src="../lab/00-baseline/record.mp4" style="width:100%;max-height:340px;border-radius:8px;background:#000"></video>
+        </div>
+        <figcaption>Repare: <br/> - zero perguntas de negócio — o que não foi dito foi inventado<br/> - inventados: carrinho e catálogo sem confirmação · exceções genéricas · "expirado" que nunca expira<br/> - apenas uma pergunta sobre stack</figcaption>
+      </figure>
+      <div class="code-card" style="flex:1;min-width:0">
+        <div class="code-card__bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="code-card__name">lab/00-baseline/</span>
+        </div>
+        <pre style="font-size:13px"><code class="language-bash">└── carrinho.ts   # código gerado</code></pre>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Dê o play e narre por cima; pause antes de avançar. "Tratamos agentes como buscadores; deveríamos tratá-los como pair programmers literalistas" (GitHub Blog) — a gravação mostra: zero perguntas, direto ao código. A estrutura ao lado é o resultado inteiro da execução.</aside>
+</section>
+
+<!-- 07 · TABELA — EXPECTATIVAS + BASELINE --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">Um prompt tão vago esconde expectativas</h2>
+    <table style="border-collapse:collapse;width:100%;max-width:1080px;font:400 16px/1.45 var(--font-body)">
+      <thead><tr style="border-bottom:2px solid var(--brand)"><th style="text-align:left;padding:6px 10px;font:500 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)">EXPECTATIVA</th><th style="text-align:left;padding:6px 10px;font:500 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)">BASELINE</th></tr></thead>
+      <tbody><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">cupom percentual aplica % sobre o total</td><td style="padding:6px 10px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:14px"></span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">cupom de valor fixo subtrai do total</td><td style="padding:6px 10px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:14px"></span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">desconto maior que o total</td><td style="padding:6px 10px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:14px"></span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">cupom inexistente</td><td style="padding:6px 10px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:14px">exceção genérica</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">cupom expirado</td><td style="padding:6px 10px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:14px">sem validade</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">cupom inativo</td><td style="padding:6px 10px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:14px">sem status</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">total abaixo do mínimo do cupom</td><td style="padding:6px 10px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:14px">exceção genérica</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">total exatamente no mínimo</td><td style="padding:6px 10px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:14px"></span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">segundo cupom num carrinho já descontado</td><td style="padding:6px 10px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:14px">aplica de novo</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:6px 10px">cupom válido no próprio dia da expiração</td><td style="padding:6px 10px;font-weight:600;color:#E5E145">⚠ <span style="color:var(--muted);font-size:14px">intestável</span></td></tr></tbody>
+    </table>
+    <p class="small muted">Expectativas que viram <strong>critérios de aceitação</strong> para julgar outros métodos.</p>
+  </div>
+  <aside class="notes">
+    A última coluna é a baseline: 4 ✓, 5 ✗, 1 ⚠. Essas expectativas viram os
+    critérios de aceitação que julgam os três métodos; o gabarito completo,
+    com valores, está no README da baseline.
+  </aside>
+</section>
+
+
+
+<!-- 08 · DIVISOR 02 -->
+<section class="slide slide--section" data-chrome="min">
+  <div class="slide__main">
+    <h2 class="title">Spec primeiro,<br>código depois</h2>
+    <p class="lead muted">O que é SDD — a definição, o ciclo e os três níveis.</p>
+  </div>
+  <span class="section__num" aria-hidden="true">02</span>
+  <aside class="notes">Abre o bloco da definição: o que é SDD, com fonte nos três lugares que importam.</aside>
+</section>
+
+<!-- 09 · DUAS COLUNAS — SPEC É CONTRATO --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">Definição de Spec</p>
+    <h2 class="title">Spec é contrato, não documento</h2>
+    <div class="cols">
+      <div class="cols__left">
+        <p class="lead">"Um <strong>contrato</strong> de como o código deve se comportar — e a <strong>fonte da verdade</strong> que ferramentas e agentes usam para <strong>gerar</strong>, <strong>testar</strong> e <strong>validar</strong> código"</p>
+        <p class="muted">Não é um documento estático: artefato vivo e executável — GitHub Blog</p>
+      </div>
+      <div class="stack">
+        <div class="card">
+          <span class="card__label">01</span>
+          <h3>Requisitos e critérios de aceitação</h3>
+          <p>O comportamento esperado, com cenários verificáveis.</p>
+        </div>
+        <div class="card">
+          <span class="card__label">02</span>
+          <h3>Constraints e edge cases</h3>
+          <p>Limites, exceções e o que está fora do escopo.</p>
+        </div>
+        <div class="card">
+          <span class="card__label">03</span>
+          <h3>A linguagem do domínio</h3>
+          <p>Os termos que o código, o teste e a conversa compartilham.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Definição do GitHub Blog; o que entra na spec vem do Microsoft Dev Blog
+    (guardrails, requisitos, constraints, acceptance criteria, edge cases).
+    Enfatize "fonte da verdade": quando código e spec divergem, a spec vence.
+  </aside>
+</section>
+
+<!-- 10 · CÓDIGO — TRECHO DE SPEC REAL --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">Concreto</p>
+    <h2 class="title">O que uma spec diz que um prompt não diz</h2>
+    <div class="code-card">
+      <div class="code-card__bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="code-card__name">spec.md</span>
+      </div>
+      <pre><code class="language-markdown">### Requirement: Total nunca negativo
+O sistema **DEVE** limitar o total a zero quando o
+desconto exceder o subtotal.
+
+#### Scenario: Desconto maior que o subtotal
+- **QUANDO** o subtotal é 3000 centavos e o cupom
+  fixo é de 5000 centavos
+- **ENTÃO** o desconto é 5000 centavos e o total é 0</code></pre>
+    </div>
+  </div>
+  <aside class="notes">
+    Leia o trecho em voz alta — é pequeno e vale a leitura. Nenhuma dúvida
+    resta sobre o que acontece quando o desconto estoura o subtotal.
+  </aside>
+</section>
+
+<!-- 11 · DIAGRAMA — O CICLO --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">O ciclo que substitui o chute</h2>
+    <figure style="max-width:100%">
+      <div class="figure__frame">
+        <svg class="diagram" viewBox="0 0 900 230" role="img" aria-label="Ciclo SDD: prompt vago, perguntas, spec, plano e tarefas, código, verificação — e de volta à spec quando algo muda">
+          <defs>
+            <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#8A8A84"/>
+            </marker>
+          </defs>
+          <g>
+            <rect class="node" x="0" y="36" width="130" height="92" rx="10"/>
+            <text class="num" x="16" y="66">01</text>
+            <text class="lbl" style="font-size:19px" x="16" y="104">prompt vago</text>
+
+            <rect class="node" x="154" y="36" width="130" height="92" rx="10"/>
+            <text class="num" x="170" y="66">02</text>
+            <text class="lbl" style="font-size:19px" x="170" y="104">perguntas</text>
+
+            <rect class="node" x="308" y="36" width="130" height="92" rx="10"/>
+            <text class="num" x="324" y="66">03</text>
+            <text class="lbl" style="font-size:19px" x="324" y="104">spec</text>
+
+            <rect class="node" x="462" y="36" width="130" height="92" rx="10"/>
+            <text class="num" x="478" y="66">04</text>
+            <text class="lbl" style="font-size:19px" x="478" y="104">plano</text>
+
+            <rect class="node" x="616" y="36" width="130" height="92" rx="10"/>
+            <text class="num" x="632" y="66">05</text>
+            <text class="lbl" style="font-size:19px" x="632" y="104">código</text>
+
+            <rect class="node" x="770" y="36" width="130" height="92" rx="10"/>
+            <text class="num" x="786" y="66">06</text>
+            <text class="lbl" style="font-size:19px" x="786" y="104">verificação</text>
+
+            <path class="arrow" d="M130 82 H154" marker-end="url(#arw)"/>
+            <path class="arrow" d="M284 82 H308" marker-end="url(#arw)"/>
+            <path class="arrow" d="M438 82 H462" marker-end="url(#arw)"/>
+            <path class="arrow" d="M592 82 H616" marker-end="url(#arw)"/>
+            <path class="arrow" d="M746 82 H770" marker-end="url(#arw)"/>
+
+            <path class="arrow" d="M835 128 C835 196 373 196 373 132" stroke-dasharray="4 7" marker-end="url(#arw)"/>
+            <text class="hint" x="600" y="214" text-anchor="middle">mudança? volta na spec — o código se re-gera</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>O ciclo se repete por mudança, não por projeto. A spec pode evoluir.</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    O ciclo se repete por mudança, não por projeto: cada nova feature entra
+    pelo topo, não do zero.
+  </aside>
+</section>
+
+<!-- 12 · DUAS COLUNAS — TRÊS NÍVEIS --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">Fowler · Böckeler</p>
+    <h2 class="title">SDD não é uma coisa só: três níveis</h2>
+    <div class="cols">
+      <div class="cols__left">
+        <p class="lead">Cada nível herda o anterior — e se compromete mais com a spec.</p>
+      </div>
+      <div class="stack">
+        <div class="card">
+          <span class="card__label">01</span>
+          <h3>spec-first</h3>
+          <p>A spec nasce antes do código e orienta a tarefa.</p>
+        </div>
+        <div class="card">
+          <span class="card__label">02</span>
+          <h3>spec-anchored</h3>
+          <p>A spec sobrevive à tarefa e evolui com a feature.</p>
+        </div>
+        <div class="card">
+          <span class="card__label">03</span>
+          <h3>spec-as-source</h3>
+          <p>Só a spec é editada; o código é gerado dela.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Fonte: Birgitta Böckeler no Martin Fowler (out/2025) — "SDD ainda está em
+    fluxo; todo SDD é spec-first, nem todo um é spec-anchored".
+  </aside>
+</section>
+
+<!-- 13 · CITAÇÃO — MICROSOFT --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <blockquote class="quote">
+      IA acelera cada etapa — mas não corrige a ambiguidade que nunca foi resolvida.
+      <cite>— Microsoft Dev Blog · e a tese falada por cima: "Spec quality = output quality"</cite>
+    </blockquote>
+  </div>
+  <aside class="notes">
+    Fecha o bloco 01. A frase-tese do Microsoft Dev Blog vai falada, não
+    escrita: spec quality = output quality.
+  </aside>
+</section>
+
+<!-- 14 · DIVISOR 03 --><section class="slide slide--section" data-chrome="min">
+  <div class="slide__main">
+    <h2 class="title">Quem manda no processo —<br>e quem executa</h2>
+  </div>
+  <span class="section__num" aria-hidden="true">03</span>
+  <aside class="notes">
+    Framework não é agente — são camadas independentes.
+  </aside>
+</section>
+
+<!-- 15 · DUAS COLUNAS — FRAMEWORK vs AGENTE --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">As duas camadas</p>
+    <h2 class="title">Framework define processo; Agent executa</h2>
+    <div class="cols">
+      <div class="cols__left">
+        <p class="lead"><strong>Frameworks</strong> definem o quê e em que ordem. O <strong>Agent</strong> é quem executa — e você escolhe qualquer um.</p>
+      </div>
+      <div class="stack">
+        <div class="card">
+          <span class="card__label">01</span>
+          <h3>Processo</h3>
+          <p>Constituição, fases, gates, checklists — o <strong>método</strong></p>
+        </div>
+        <div class="card">
+          <span class="card__label">02</span>
+          <h3>Agent</h3>
+          <p>OpenCode, Claude Code, Codex, Cursor, … : o <strong>executor do método</strong></p>
+        </div>
+        <div class="card">
+          <span class="card__label">03</span>
+          <h3>Portabilidade</h3>
+          <p>O mesmo workflow <strong>disponível</strong> nos principais agents</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    O aluno pode usar qualquer agente — a spec não depende disso. Todas as
+    cinco ferramentas do panorama têm integração nativa com o OpenCode.
+  </aside>
+</section>
+
+<!-- 16 · FIGURA — PANORAMA DAS CINCO --><section class="slide" data-chrome="full">
+  <style>
+    .pano-card{transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+    .pano-card:hover{transform:translateY(-5px);background:rgba(229,225,69,.07);border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.35)}
+  </style>
+  <div class="slide__main">
+    <p class="kicker">O panorama</p>
+    <h2 class="title">Ecossistema maduro</h2>
+    <figure style="max-width:100%">
+      <div class="figure__frame" style="padding:26px">
+        <div style="display:flex;gap:26px;align-items:stretch;width:100%">
+          <div style="flex:4;min-width:0">
+            <p style="font:500 11px var(--font-mono);letter-spacing:.14em;color:var(--muted);margin:0 0 10px;text-align:center"><strong>FRAMEWORKS</strong> · RODAM NO SEU AGENT</p>
+            <div style="display:flex;gap:12px;align-items:stretch;justify-content:center">
+          <a class="pano-card" href="https://github.com/github/spec-kit" target="_blank" rel="noopener" style="flex:1;min-width:130px;text-align:center;text-decoration:none;color:inherit;">
+            <div style="height:96px;display:flex;align-items:center;justify-content:center">
+              <img src="https://raw.githubusercontent.com/github/spec-kit/main/media/logo_large.webp" alt="Spec Kit" style="max-height:84px;max-width:100%;object-fit:contain">
+            </div>
+            <p style="font:600 15px var(--font-body);margin:8px 0 2px">Spec Kit</p>
+            <p style="font:400 12px/1.4 var(--font-mono);color:var(--muted);margin:0">/speckit.plan</p>
+          <p style="font:600 11px var(--font-mono);color:var(--brand);margin:4px 0 0">★ 149k stars</p>
+          </a>
+          <a class="pano-card" href="https://openspec.dev" target="_blank" rel="noopener" style="flex:1;min-width:130px;text-align:center;text-decoration:none;color:inherit;">
+            <div style="height:96px;display:flex;align-items:center;justify-content:center">
+              <img src="https://openspec.dev/favicon-512.png" alt="OpenSpec" style="max-height:84px;max-width:100%;object-fit:contain">
+            </div>
+            <p style="font:600 15px var(--font-body);margin:8px 0 2px">OpenSpec</p>
+            <p style="font:400 12px/1.4 var(--font-mono);color:var(--muted);margin:0">design.md</p>
+          <p style="font:600 11px var(--font-mono);color:var(--brand);margin:4px 0 0">★ 74k stars</p>
+          </a>
+          <a class="pano-card" href="https://github.com/bmad-code-org/BMAD-METHOD" target="_blank" rel="noopener" style="flex:1;min-width:130px;text-align:center;text-decoration:none;color:inherit;">
+            <div style="height:96px;display:flex;align-items:center;justify-content:center">
+              <img src="https://docs.bmad-method.org/favicon.svg" alt="BMAD" style="max-height:84px;max-width:100%;object-fit:contain">
+            </div>
+            <p style="font:600 15px var(--font-body);margin:8px 0 2px">BMAD</p>
+            <p style="font:400 12px/1.4 var(--font-mono);color:var(--muted);margin:0">Arquiteto</p>
+          <p style="font:600 11px var(--font-mono);color:var(--brand);margin:4px 0 0">★ 55k stars</p>
+          </a>
+          <a class="pano-card" href="https://github.com/mattpocock/skills" target="_blank" rel="noopener" style="flex:1;min-width:130px;text-align:center;text-decoration:none;color:inherit;">
+            <div style="height:96px;display:flex;align-items:center;justify-content:center">
+              <img src="https://res.cloudinary.com/total-typescript/image/upload/v1777382277/skills-repo-dark_2x.png" alt="Matt Pocock Skills" style="max-height:84px;max-width:100%;object-fit:contain">
+            </div>
+            <p style="font:600 15px var(--font-body);margin:8px 0 2px">Matt Pocock Skills</p>
+            <p style="font:400 12px/1.4 var(--font-mono);color:var(--muted);margin:0">seams do @to-spec</p>
+          <p style="font:600 11px var(--font-mono);color:var(--brand);margin:4px 0 0">★ 319k stars</p>
+          </a>
+            </div>
+          </div>
+          <div style="border-left:1px solid var(--line)"></div>
+          <a class="pano-card" href="https://kiro.dev" target="_blank" rel="noopener" style="flex:1;min-width:130px;text-align:center;text-decoration:none;color:inherit;border:1px solid var(--brand);border-radius:10px;padding:12px 10px;background:rgba(229,225,69,.05);display:flex;flex-direction:column;justify-content:center">
+            <p style="font:500 11px var(--font-mono);letter-spacing:.14em;color:var(--brand);margin:0 0 10px;text-align:center"><strong>AGENT</strong></p>
+            <div style="height:96px;display:flex;align-items:center;justify-content:center">
+              <img src="https://kiro.dev/icon.svg" alt="Kiro" style="max-height:84px;max-width:100%;object-fit:contain">
+            </div>
+            <p style="font:600 15px var(--font-body);margin:8px 0 2px">Kiro</p>
+            <p style="font:400 12px/1.4 var(--font-mono);color:var(--muted);margin:0">spec nativa: requirements → design → tasks</p>
+          <p style="font:600 11px var(--font-mono);color:var(--brand);margin:4px 0 0">★ 4,5k stars</p>
+          </a>
+        </div>
+        <p style="font:400 8px var(--font-mono);color:var(--muted);margin:12px 0 0;text-align:right">GitHub API · 09/11/2026</p>
+      </div>
+    </figure>
+  </div>
+  <aside class="notes">
+    Não existe a melhor ferramenta — existe a cerimônia certa para o tamanho
+    do problema. Os quatro da esquerda são frameworks que rodam no seu agente;
+    o Kiro é a exceção: a spec nasce dentro do próprio IDE/CLI. Cada card leva
+    ao projeto oficial. BMAD e Kiro ficam no panorama; os experimentos rodam em três.
+  </aside>
+</section>
+
+
+<!-- 17 · TERMINAL — INSTALAR --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">Instalação de GitHub Spec Kit, OpenSpec e Matt Pocock's Skills</h2>
+    <div class="term" style="max-width:100%">
+      <div class="term__bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>terminal</span></div>
+      <div class="term__body">
+        <p><span class="p">$</span>uv tool install specify-cli</p>
+        <p><span class="p">$</span>specify init my-project</p>
+        <p class="out ok">✓ GitHub Spec Kit</p>
+        <p><span class="p">$</span>npm install -g @fission-ai/openspec@latest</p>
+        <p><span class="p">$</span>openspec init</p>
+        <p class="out ok">✓ OpenSpec</p>
+        <p><span class="p">$</span>npx skills@latest add mattpocock/skills</p>
+        <p class="out ok">✓ Matt Pocock's Skills</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    No curso as ferramentas já estão instaladas; os links oficiais de
+    instalação estão no README do repositório. O aluno pode pausar e instalar junto. O Matt Pocock termina
+    com o setup no agente: @setup-matt-pocock-skills, uma vez por repositório
+    (tracker local ou GitHub/GitLab/Jira).
+  </aside>
+</section>
+
+<!-- 18 · DIVISOR 04 --><section class="slide slide--section" data-chrome="min">
+  <div class="slide__main">
+    <h2 class="title">A mesma spec,<br>resultados diferentes</h2>
+  </div>
+  <span class="section__num" aria-hidden="true">04</span>
+  <aside class="notes">
+    A comparação é o coração do curso — os três métodos diante do mesmo input.
+  </aside>
+</section>
+
+<!-- 19 · PROTOCOLO — INSUMO + REGRAS --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">Metodologia</p>
+    <h2 class="title">O protocolo do experimento</h2>
+    <div style="display:flex;gap:26px;align-items:start;max-width:100%">
+      <div class="term" style="flex:1.15;min-width:0">
+        <div class="term__bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>prompt</span></div>
+        <div class="term__body" style="font-size:17px">
+          <p><span class="p">›</span>Crie uma função que receba um carrinho e um código de cupom e aplique o desconto no valor total.</p>
+          <p class="out">agent: OpenCode v2.2.5</p>
+          <p class="out">modelo: GLM-5.3-Flash</p>
+        </div>
+      </div>
+      <ul class="bullets" style="flex:1;min-width:0;margin:0;font-size:17px">
+        <li><strong>Prompt idêntico</strong>, mesmo <strong>Agent</strong> e mesmo <strong>modelo</strong> em todas as execuções.</li>
+        <li>O operador responde o que a ferramenta perguntar, <strong>apenas aceitando recomendações</strong>.</li>
+        <li><strong>Critérios de aceitação</strong> previamente definidos a partir das <strong>expectativas iniciais</strong>.</li>
+        <li>Cada execução fica preservada: artefatos, código e gravação no repositório.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    A postura do operador é o que torna a comparação justa: nunca oferecer
+    regras de negócio não solicitadas. O insumo completo — com os constraints
+    de estudo — está no slide 05.
+  </aside>
+</section>
+
+<!-- 20 · FIGURA VÍDEO — SPEC KIT --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">GitHub Spec Kit</h2>
+    <div style="display:flex;gap:20px;align-items:stretch">
+      <figure style="flex:1.6;min-width:0">
+        <div class="figure__frame">
+          <video controls preload="metadata" src="../lab/01-spec-kit/record.mp4" style="width:100%;max-height:340px;border-radius:8px;background:#000"></video>
+        </div>
+        <figcaption></figcaption>
+      </figure>
+      <div class="code-card" style="flex:1;min-width:0">
+        <div class="code-card__bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <pre><code class="language-bash" style="font-size:12px">lab/01-spec-kit
+├── .opencode
+├── .specify
+├── package.json
+├── specs/001-cart-coupon-discount
+│   ├── checklists
+│   │   └── requirements.md
+│   ├── contracts
+│   │   └── aplicar-cupom.md
+│   ├── data-model.md
+│   ├── plan.md
+│   ├── quickstart.md
+│   ├── research.md
+│   ├── spec.md
+│   └── tasks.md
+├── src
+│   ├── aplicar-cupom.ts
+│   ├── carrinho.ts
+│   └── cupom.ts
+├── tests
+│   └── aplicar-cupom.test.ts
+└── tsconfig.json
+</code></pre>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">Pause nos artefatos gerados. A constituição declarada no começo reaparece dentro do plan, como gate de conformidade. A árvore ao lado é o dossiê: cada arquivo é uma fase.</aside>
+</section>
+
+
+<!-- 21 · FIGURA VÍDEO — OPENSPEC --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">OpenSpec</h2>
+    <div style="display:flex;gap:20px;align-items:stretch">
+      <figure style="flex:1.6;min-width:0">
+        <div class="figure__frame">
+          <video controls preload="metadata" src="../lab/02-openspec/record.mp4" style="width:100%;max-height:340px;border-radius:8px;background:#000"></video>
+        </div>
+        <figcaption></figcaption>
+      </figure>
+      <div class="code-card" style="flex:1;min-width:0">
+        <div class="code-card__bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <pre><code class="language-bash" style="font-size:12px">lab/02-openspec
+├── .opencode
+├── openspec
+│   ├── changes/archive/2026-11-09-apply-cart-coupon-discount
+│   │   ├── .openspec.yaml
+│   │   ├── design.md
+│   │   ├── proposal.md
+│   │   ├── specs/cart-coupon
+│   │   │   └── spec.md
+│   │   └── tasks.md
+│   ├── config.yaml
+│   └── specs/cart-coupon
+│       └── spec.md
+├── package.json
+├── src/domains/cart
+│   ├── cupom.test.ts
+│   ├── cupom.ts
+│   ├── subtotal.test.ts
+│   ├── subtotal.ts
+│   ├── total.test.ts
+│   ├── total.ts
+│   └── types.ts
+└── tsconfig.json</code></pre>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">O sync/archive é o momento que diferencia o método — a especificação deixa de ser artefato da tarefa e vira patrimônio do sistema. A árvore ao lado mostra as duas pontas: a change e a fonte da verdade.</aside>
+</section>
+
+
+
+<!-- 22 · FIGURA VÍDEO — MATT POCOCK --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">Matt Pocock's Skills</h2>
+    <div style="display:flex;gap:20px;align-items:stretch">
+      <figure style="flex:1.6;min-width:0">
+        <div class="figure__frame">
+          <video controls preload="metadata" src="../lab/03-matt-pocock/record.mp4" style="width:100%;max-height:340px;border-radius:8px;background:#000"></video>
+        </div>
+        <figcaption></figcaption>
+      </figure>
+      <div class="code-card" style="flex:1;min-width:0">
+        <div class="code-card__bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <pre><code class="language-bash" style="font-size:12px">lab/03-matt-pocock
+├── .agents/skills
+├── .githooks
+│   └── pre-commit
+├── .gitignore
+├── .scratch
+│   └── aplicar-cupom
+│       ├── issues
+│       │   ├── 01-tracer-percentual.md
+│       │   ├── 02-cupom-valor-fixo.md
+│       │   └── 03-endurecer-bordas.md
+│       └── spec.md
+├── AGENTS.md
+├── GLOSSARY.md
+├── docs/agents
+│   ├── domain.md
+│   ├── issue-tracker.md
+│   └── triage-labels.md
+├── package.json
+├── skills-lock.json
+├── src
+│   ├── aplicar-cupom.test.ts
+│   └── aplicar-cupom.ts
+└── tsconfig.json</code></pre>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">O operador só aceita recomendações — e ainda assim a entrevista decide tudo: cada resposta vira user story com critério de aceite. A árvore ao lado: sem framework — markdown no tracker (local, GitHub, GitLab, Jira…).</aside>
+</section>
+
+
+<!-- 23 · NÚMEROS — PERGUNTAS --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">O eixo da descoberta</p>
+    <h2 class="title">Perguntas podem melhorar o Spec</h2>
+    <div class="stats">
+      <div class="stat"><b>1</b><p>pergunta na baseline<br/> — só a linguagem</p></div>
+      <div class="stat"><b>2+3</b><p>perguntas no Spec Kit e OpenSpec<br/> — mecânica e modelagem</p></div>
+      <div class="stat"><b>14</b><p>perguntas no <strong>grilling</strong><br/> — em rodadas<br/><span style="color:var(--muted);font-size:12px;font-weight:400">Fonte: READMEs dos labs</span></p></div>
+    </div>
+  <aside class="notes">
+    A pergunta do OpenSpec sobre a origem dos cupons virou decisão de
+    arquitetura: catálogo injetado por parâmetro, não hardcoded.
+  </aside>
+</section>
+
+<!-- 24 · BULLETS — TRATAMENTOS --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">O que cada método faz com o que não sabe</p>
+    <h2 class="title">A ausência de regras não tem o mesmo peso</h2>
+    <ul class="bullets">
+      <li><strong>Baseline</strong>: <em>invenção silênciosa</em> — cupom expirado funciona para sempre.</li>
+      <li><strong>GitHub Spec Kit</strong>: <em>Assumptions</em> — o "fora do escopo" declarado no documento.</li>
+      <li><strong>OpenSpec</strong>: <em>Non-Goals</em> — lista própria no design.</li>
+      <li><strong>Matt Pocock's Skills</strong>: <em>Out of Scope</em> + GLOSSARY.md que nomeia o que falta.</li>
+    </ul>
+  </div>
+  <aside class="notes">
+    A spec fundida em openspec/specs/ sobrevive à change — é o que separa
+    spec-first de spec-anchored na prática.
+  </aside>
+</section>
+
+<!-- 25 · TABELA — MATRIZ DA COMPARACAO --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">A comparação</p>
+    <h2 class="title">Os três métodos, critério a critério</h2>
+    <table style="border-collapse:collapse;width:100%;max-width:1100px;font:400 15px/1.4 var(--font-body)">
+      <thead><tr style="border-bottom:2px solid var(--brand)"><th style="text-align:left;padding:5px 8px;font:500 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)">Nº</th><th style="text-align:left;padding:5px 8px;font:500 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)">EXPECTATIVA</th><th style="text-align:left;padding:5px 8px;font:500 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)">SPEC KIT</th><th style="text-align:left;padding:5px 8px;font:500 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)">OPENSPEC</th><th style="text-align:left;padding:5px 8px;font:500 11px var(--font-mono);letter-spacing:.12em;color:var(--muted)">MATT POCOCK</th></tr></thead>
+      <tbody><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">01</td><td style="padding:5px 8px">cupom percentual aplica % sobre o total</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓</td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">02</td><td style="padding:5px 8px">cupom de valor fixo subtrai do total</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓</td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">03</td><td style="padding:5px 8px">desconto maior que o total</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">total 0</span></td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">total 0</span></td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">total 0</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">04</td><td style="padding:5px 8px">cupom inexistente</td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">codigo-desconhecido</span></td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">cupomDesconhecido</span></td><td style="padding:5px 8px;font-weight:600;color:#B6E39A">✓ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">codigo-invalido</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">05</td><td style="padding:5px 8px">cupom expirado</td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">fora do escopo</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">non-goal</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">fora do escopo (v2)</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">06</td><td style="padding:5px 8px">cupom inativo</td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">fora do escopo</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">non-goal</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">nem documentado</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">07</td><td style="padding:5px 8px">total abaixo do mínimo</td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">fora do escopo</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">non-goal</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">nem documentado</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">08</td><td style="padding:5px 8px">total exatamente no mínimo</td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">sem mínimo</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">sem mínimo</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">sem mínimo</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">09</td><td style="padding:5px 8px">segundo cupom no carrinho</td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">fora do escopo</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">non-goal</span></td><td style="padding:5px 8px;font-weight:600;color:#FFA26B">✗ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">decidiu: substitui</span></td></tr><tr style="border-bottom:1px solid var(--line)"><td style="padding:5px 8px;font-family:var(--font-mono);color:var(--muted)">10</td><td style="padding:5px 8px">válido no próprio dia</td><td style="padding:5px 8px;font-weight:600;color:#E5E145">⚠ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">intestável</span></td><td style="padding:5px 8px;font-weight:600;color:#E5E145">⚠ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">intestável</span></td><td style="padding:5px 8px;font-weight:600;color:#E5E145">⚠ <span style="color:var(--muted);font-size:12px;font-family:var(--font-mono)">intestável</span></td></tr></tbody>
+    </table>
+  </div>
+  <aside class="notes">
+    A matriz inteira: as colunas empatam em 4/10 — as diferenças moram nos
+    detalhes: o nome do erro estruturado (linha 04) e a decisão explícita de
+    substituição no Matt Pocock (linha 09). O gabarito vem do slide 07.
+  </aside>
+</section>
+
+
+
+
+
+<!-- 26 · GRADE — VANTAGENS -->
+<section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0">O que muda quando existe spec</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:100%">
+      <div class="card" style="border-top-color:#FFA26B;background:rgba(255,162,107,.05)">
+        <h3>Só o prompt</h3>
+        <p>O agente inventa o que faltou, erra em silêncio — o bug chega em produção — e não deixa nada para a próxima sessão.</p>
+      </div>
+      <div class="card" style="border-top-color:#B6E39A;background:rgba(182,227,154,.05)">
+        <h3>Menos retrabalho</h3>
+        <p>Ambiguidade resolvida antes: a IA gera contexto estruturado.</p>
+      </div>
+      <div class="card" style="border-top-color:#B6E39A;background:rgba(182,227,154,.05)">
+        <h3>Alinhamento total</h3>
+        <p>Produto, engenharia e teste na mesma fonte de verdade.</p>
+      </div>
+      <div class="card" style="border-top-color:#B6E39A;background:rgba(182,227,154,.05)">
+        <h3>Entrega previsível</h3>
+        <p>Validação amarrada à intenção original; mudar de rumo é atualizar a spec e re-gerar.</p>
+      </div>
+      <div class="card" style="border-top-color:#B6E39A;background:rgba(182,227,154,.05)">
+        <h3>Menos surpresas</h3>
+        <p>O agente sabe o quê, o como e em que ordem — menos chute, menos surpresa.</p>
+      </div>
+      <div class="card" style="border-top-color:#B6E39A;background:rgba(182,227,154,.05)">
+        <h3>Validação de graça</h3>
+        <p>Os critérios de aceitação viram testes — a verificação nasce junto com o código.</p>
+      </div>
+      <div class="card" style="border-top-color:#B6E39A;background:rgba(182,227,154,.05);grid-column:1 / -1">
+        <h3>O artefato sobrevive à sessão</h3>
+        <p>Outra sessão, outro agente ou outro operador continuam do contrato — sem re-explicar nada.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Destilado do Microsoft Dev Blog e do GitHub Blog: menos retrabalho e
+    surpresa; alinhamento entre produto, engenharia e teste; entrega previsível;
+    e a validação nasce junto — os critérios viram testes. E o achado do nosso
+    estudo: o processo nunca erra em silêncio. Caso real: onboarding em
+    brownfield caiu de 2–3 semanas para dias.
+  </aside>
+</section>
+
+
+
+
+
+<!-- 27 · DIVISOR 05 -->
+<section class="slide slide--section" data-chrome="min">
+  <div class="slide__main">
+    <h2 class="title">Leve o estudo para o<br>seu próximo prompt</h2>
+    <p class="lead muted">Recap, fontes e o convite.</p>
+  </div>
+  <span class="section__num" aria-hidden="true">05</span>
+  <aside class="notes">Abre o encerramento: o recap, as fontes e o convite à prática.</aside>
+</section>
+
+
+<!-- 28 · RECAP -->
+<section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <h2 class="title">Recapitulando</h2>
+    <ul class="checks">
+      <li>Spec é <strong>contrato</strong> e <strong>fonte da verdade</strong> — não documento que se arquiva.</li>
+      <li>O que você não diz, o Agent inventa — importância de <strong>harness</strong>, com <i>coding standards and patterns</i>, <i>constraints</i> and <i>guardrails</i>.</li>
+      <li>A spec orienta como <strong>gerar</strong>, <strong>testar</strong> e <strong>validar</strong> — o ciclo nunca termina nela.</li>
+      <li>Quanto melhor a qualidade de um Spec, mais eficiente o processo de desenvolvimento.</li>
+    </ul>
+  </div>
+  <aside class="notes">Recap não é resumo: é a versão curta que a pessoa repete no elevador.</aside>
+</section>
+
+<!-- 29 · REFERÊNCIAS --><section class="slide" data-chrome="full">
+  <div class="slide__main">
+    <p class="kicker">Para saber mais</p>
+    <h2 class="title">As fontes do curso</h2>
+    <div class="refs">
+      <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/" target="_blank" rel="noopener">
+        <span class="refs__label">GitHub Blog — Spec-driven development with AI (Spec Kit)</span>
+        <span class="refs__url">github.blog</span>
+      </a>
+      <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/" target="_blank" rel="noopener">
+        <span class="refs__label">Microsoft Dev Blog — Spec-first, AI-native engineering</span>
+        <span class="refs__url">developer.microsoft.com</span>
+      </a>
+      <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener">
+        <span class="refs__label">Martin Fowler · Böckeler — SDD: Kiro, spec-kit, Tessl</span>
+        <span class="refs__url">martinfowler.com</span>
+      </a>
+      <a href="https://sddobservatory.com" target="_blank" rel="noopener">
+        <span class="refs__label">SDD Observatory — quem usa SDD no mundo real</span>
+        <span class="refs__url">sddobservatory.com</span>
+      </a>
+    </div>
+  </div>
+  <aside class="notes">
+    Deixe este slide no ar no encerramento — é o que a pessoa fotografa.
+  </aside>
+</section>
+
+<!-- 30 · ENCERRAMENTO --><section class="slide slide--closing" data-chrome="none">
+  <div class="closing__main">
+    <p class="kicker">Fim · obrigado</p>
+    <h2 class="closing__title">Comece pela próxima spec</h2>
+    <p class="lead muted">Escolha uma ferramenta, pegue o próximo prompt vago — e transforme-o em contrato.</p>
+  </div>
+  <div class="refs" data-list="links"></div>
+  <div class="closing__foot">
+    <svg class="logo logo--sm" viewBox="0 0 98 40" role="img" aria-label="DIO"><use href="#dio-logo"/></svg>
+    <span class="mono small muted" data-bind="event"></span>
+  </div>
+  <aside class="notes">
+    Convite concreto: o repositório do estudo é público — reproduza o
+    experimento com o seu prompt vago e compare os placares.
+  </aside>
+</section>
+</div>
+</div>
+
+<script type="module">
+import Reveal from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.2/dist/reveal.mjs';
+import Highlight from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.2/dist/plugin/highlight.mjs';
+import Notes from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.2/dist/plugin/notes.mjs';
+import Zoom from 'https://cdn.jsdelivr.net/npm/reveal.js@6.0.2/dist/plugin/zoom.mjs';
+
+/* ============================================================
+   CONFIGURAÇÃO — é o único bloco que muda de aula para aula.
+   ============================================================ */
+const DECK = {
+  title: 'Spec-Driven Development',
+  subtitle: 'Pare de escrever prompts, comece a escrever specs — do prompt vago ao contrato que agentes de IA executam',
+  event: 'Spec-Driven Development',
+  date: 'Novembro de 2026',
+  theme: 'dark',
+  instructor: {
+    name: 'Thiago Poiani',
+    role: 'Principal Software Engineer, Skip',
+  },
+  links: [
+    { label: 'GitHub Spec Kit', url: 'https://github.com/github/spec-kit' },
+    { label: 'OpenSpec', url: 'https://openspec.dev' },
+    { label: 'Matt Pocock Skills', url: 'https://github.com/mattpocock/skills' },
+    { label: 'OpenCode', url: 'https://opencode.ai' },
+  ],
+};
+
+/* ---------- tema ---------- */
+const params = new URLSearchParams(location.search);
+const theme = params.get('theme')
+  || localStorage.getItem('dio-deck-theme')
+  || DECK.theme
+  || 'dark';
+document.documentElement.dataset.theme = theme;
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 't' || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target instanceof Element && e.target.closest('input, textarea, [contenteditable]')) return;
+  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem('dio-deck-theme', next);
+});
+
+/* ---------- bindings ---------- */
+const get = (obj, path) => path.split('.').reduce((acc, key) => acc?.[key], obj);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+document.title = DECK.title;
+
+document.querySelectorAll('[data-bind]').forEach((el) => {
+  const value = get(DECK, el.dataset.bind);
+  if (value == null) return;
+  el.textContent = value;
+});
+
+const linkList = document.querySelector('[data-list="links"]');
+if (linkList) {
+  linkList.innerHTML = DECK.links.map((l) => `
+    <a href="${esc(l.url)}" target="_blank" rel="noopener">
+      <span class="refs__label">${esc(l.label)}</span>
+      <span class="refs__url">${esc(l.url.replace(/^https?:\/\//, ''))}</span>
+    </a>`).join('');
+}
+
+document.querySelectorAll('[data-initials]').forEach((el) => {
+  el.textContent = DECK.instructor.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('');
+});
+
+/* ---------- chrome automático ---------- */
+const logo = '<svg class="logo logo--sm" viewBox="0 0 98 40" role="img" aria-label="DIO"><use href="#dio-logo"/></svg>';
+const slides = [...document.querySelectorAll('.slides > section')];
+const total = String(slides.length).padStart(2, '0');
+
+slides.forEach((slide, i) => {
+  const mode = slide.dataset.chrome || 'full';
+  if (mode === 'none') return;
+
+  const page = `<span class="pager"><b>${String(i + 1).padStart(2, '0')}</b><i>/</i>${total}</span>`;
+
+  if (mode === 'full') {
+    const top = document.createElement('div');
+    top.className = 'slide__top';
+    top.innerHTML = `<span class="top__event">${esc(DECK.event)} · ${esc(DECK.date)}</span>${logo}`;
+    slide.prepend(top);
+
+    const foot = document.createElement('div');
+    foot.className = 'slide__foot';
+    foot.innerHTML = `<span>${esc(DECK.instructor.name)}</span>${page}`;
+    slide.append(foot);
+  } else {
+    const foot = document.createElement('div');
+    foot.className = 'slide__foot slide__foot--only';
+    foot.innerHTML = page;
+    slide.append(foot);
+  }
+});
+
+/* ---------- reveal ---------- */
+Reveal.initialize({
+  width: 1280,
+  height: 720,
+  margin: 0,
+  center: false,
+  hash: true,
+  history: true,
+  controls: false,
+  progress: true,
+  slideNumber: false,
+  transition: 'fade',
+  transitionSpeed: 'fast',
+  backgroundTransition: 'fade',
+  plugins: [Highlight, Notes, Zoom],
+  highlight: { escapeHTML: false },
+});
+</script>
+</body>
+</html>
