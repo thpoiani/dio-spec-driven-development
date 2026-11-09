@@ -33,10 +33,16 @@ jobs:
       - name: Configurar Pages
         uses: actions/configure-pages@v5
 
-      - name: Empacotar slides/
+      - name: Montar site (slides + labs para os videos)
+        run: |
+          mkdir -p _site
+          cp -r slides/. _site/
+          cp -r lab _site/lab
+
+      - name: Empacotar site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: slides
+          path: _site
 
       - name: Publicar
         id: deployment
