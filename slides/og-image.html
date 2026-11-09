@@ -1,0 +1,107 @@
+<!doctype html>
+<!-- Card 1200×630 para og:image. Render com Chrome headless:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new \
+       --screenshot=og-image.png --window-size=1200,630 --force-device-scale-factor=1 \
+       --virtual-time-budget=10000 og-image.html
+     Reutiliza os tokens do deck (src: slides/index.html). -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>og-image</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#E5E145;
+  --bg:#0C0C0C;
+  --fg:#F2F2EE;
+  --muted:#8A8A84;
+  --line:#2B2B28;
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+.card{
+  position:relative;width:1200px;height:630px;
+  background:var(--bg);color:var(--fg);
+  font-family:var(--font-body);
+  padding:52px 64px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+/* grid de pontos, igual ao ::after dos slides */
+.card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(circle,var(--line) 1px,transparent 1px);
+  background-size:30px 30px;opacity:.5;
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 88% -5%,#000 0%,transparent 70%);
+  mask-image:radial-gradient(ellipse 70% 60% at 88% -5%,#000 0%,transparent 70%);
+}
+.top,.mid,.foot{position:relative;z-index:2}
+.top{display:flex;align-items:center;justify-content:space-between}
+.logo{width:96px;height:39px;color:var(--fg);display:block}
+.tag{font:500 13px var(--font-mono);letter-spacing:.15em;color:var(--muted)}
+.mid{display:flex;flex-direction:column;gap:18px;max-width:860px}
+.kicker{
+  margin:0;display:flex;align-items:center;gap:10px;
+  font:500 14px var(--font-mono);letter-spacing:.18em;
+  text-transform:uppercase;color:var(--brand);
+}
+.kicker::before{content:"//";opacity:.55;letter-spacing:0}
+h1{
+  margin:0;font-family:var(--font-display);font-weight:600;
+  font-size:84px;line-height:.98;letter-spacing:-.035em;color:var(--fg);
+}
+.lead{margin:0;font-size:27px;line-height:1.4;color:var(--fg);max-width:760px}
+.foot{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:40px;
+  border-top:1px solid var(--line);padding-top:18px;
+}
+.label{font:500 12px var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.value{font:500 21px/1.25 var(--font-body);color:var(--fg);margin:0}
+.sub{font-size:15px;color:var(--muted);margin:3px 0 0}
+.ring{position:absolute;right:20px;top:70px;width:280px;height:280px;color:var(--brand);opacity:.14;z-index:1;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <svg class="logo" viewBox="0 0 98 40" role="img" aria-label="DIO">
+      <path fill="currentColor" d="M97.058 32.674a6.446 6.446 0 01-3.963 5.96 6.428 6.428 0 01-7.016-1.389 6.443 6.443 0 014.545-10.999c1.704 0 3.338.678 4.544 1.883a6.446 6.446 0 011.89 4.545zM77.737 35.135a16.805 16.805 0 004.415-21.243 16.778 16.778 0 00-8.662-7.637 16.757 16.757 0 00-11.54-.227 16.776 16.776 0 00-8.954 7.292 16.805 16.805 0 003.58 21.4 16.762 16.762 0 0021.16.415zM33.963 20.765V0A12.847 12.847 0 0023 6.138 16.751 16.751 0 003.948 11.66a16.796 16.796 0 00-.458 19.85 16.77 16.77 0 008.342 6.278 16.752 16.752 0 0018.921-5.959 16.797 16.797 0 003.25-9.927c0-.384-.02-.762-.04-1.138zM42.208 12.934a6.387 6.387 0 00-4.517 1.873 6.4 6.4 0 00-1.871 4.522v19.364c3.41 0 6.68-1.356 9.091-3.77a12.878 12.878 0 003.766-9.101v-6.405a6.487 6.487 0 00-1.894-4.582 6.473 6.473 0 00-4.575-1.901z"/>
+      <path fill="currentColor" d="M48.687 6.44a6.445 6.445 0 01-3.971 5.95 6.427 6.427 0 01-7.012-1.396A6.443 6.443 0 0142.254 0c1.706 0 3.342.68 4.548 1.887a6.447 6.447 0 011.885 4.553z"/>
+    </svg>
+    <span class="tag">CURSO · DIO.ME</span>
+  </div>
+
+  <div class="mid">
+    <p class="kicker">Especifique, não chute</p>
+    <h1>Spec-Driven<br>Development</h1>
+    <p class="lead">Pare de escrever prompts, comece a escrever specs — do prompt vago ao código verificado.</p>
+  </div>
+
+  <div class="foot">
+    <div>
+      <p class="label">Expert</p>
+      <p class="value">Thiago Poiani</p>
+      <p class="sub">Principal Software Engineer, Skip</p>
+    </div>
+    <div>
+      <p class="label">Quando</p>
+      <p class="value">Novembro de 2026</p>
+    </div>
+  </div>
+
+  <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+    <g fill="currentColor">
+      <circle cx="90" cy="50" r="5"/><circle cx="80.64" cy="75.71" r="5"/>
+      <circle cx="56.95" cy="89.39" r="5"/><circle cx="30" cy="84.64" r="5"/>
+      <circle cx="12.41" cy="63.68" r="5"/><circle cx="12.41" cy="36.32" r="5"/>
+      <circle cx="30" cy="15.36" r="5"/><circle cx="56.95" cy="10.61" r="5"/>
+      <circle cx="80.64" cy="24.29" r="5"/>
+    </g>
+  </svg>
+</div>
+</body>
+</html>
