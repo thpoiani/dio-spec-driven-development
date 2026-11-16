@@ -6,7 +6,7 @@ Assistente de gameplay da aula 2 (DIO — SDD hands-on). Escopo, decisões vincu
 
 ### Issue tracker
 
-Issues live as local markdown files under `.scratch/<feature>/` in this project (no GitHub Issues here — gravação offline). See `docs/agents/issue-tracker.md`.
+Issues and specs live as **GitHub Issues** on `thpoiani/dio-spec-driven-development` (público; `gh` CLI). Spec = issue-pai do estágio; tickets = sub-issues com dependências nativas. PRs das etapas ficam abertos para os alunos (não são surface de triagem). See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

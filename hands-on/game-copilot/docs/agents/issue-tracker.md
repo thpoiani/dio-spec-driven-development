@@ -1,34 +1,27 @@
-# Issue tracker: Local Markdown
+# Issue tracker: GitHub
 
-Issues and specs for this project live as markdown files in `.scratch/`.
+Issues and specs for this project live as **GitHub Issues** on `thpoiani/dio-spec-driven-development` (repo público — os alunos enxergam specs, tickets e PRs). Use the `gh` CLI for all operations.
 
 ## Conventions
 
-- One feature per directory: `.scratch/<feature-slug>/`
-- The spec is `.scratch/<feature-slug>/spec.md`
-- Implementation issues are one file per ticket at `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`, never a single combined tickets file
-- Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
-- Comments and conversation history append to the bottom of the file under a `## Comments` heading
+- **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc or `--body-file` for multi-line bodies.
+- **Read an issue**: `gh issue view <number> --json number,title,body,labels,comments`.
+- **List issues**: `gh issue list --state open --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with appropriate `--label` and `--state` filters.
+- **Spec = issue-pai; tickets = sub-issues**: cada estágio tem um issue-pai com a spec (label do status) e os tickets como **sub-issues** (`gh issue create --parent <parent> ...`).
+- **Blocking**: GitHub's **native issue dependencies**. Add an edge with `gh issue create --blocked-by <n>,<n> ...` or `gh issue edit <child> --add-blocked-by <blocker>`. A ticket is unblocked when every blocker is closed.
+- **Count open blockers**: `gh issue view <n> --json blockedBy --jq '[.blockedBy.nodes[] | select(.state == "OPEN")] | length'`.
+- **Comment on an issue**: `gh issue comment <number> --body "..."`.
+- **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`.
+- **Close**: post the explanation with `gh issue comment <number> --body "..."`, then `gh issue close <number>`.
+
+## Pull Requests por estágio
+
+**PRs as a triage/request surface: no.** — mas os **PRs das etapas ficam abertos de propósito**: cada estágio abre um PR **empilhado** (base = branch do estágio anterior) para os alunos analisarem o diff da etapa; o merge só acontece no cenário final, pelo Thiago, na ordem. Issues e PRs compartilham o espaço de números (`#42` pode ser issue ou PR — resolver com `gh pr view 42` e fallback `gh issue view 42`).
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).
+Create a GitHub issue (spec = issue-pai do estágio; tickets = sub-issues).
 
 ## When a skill says "fetch the relevant ticket"
 
-Read the file at the referenced path. The user will normally pass the path or the issue number directly.
-
-## Wayfinding operations
-
-Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
-
-- **Map**: `.scratch/<effort>/map.md` (the Notes / Decisions-so-far / Fog body).
-- **Child ticket**: `.scratch/<effort>/issues/NN-<slug>.md`, numbered from `01`, with the question in the body. A `Type:` line records the ticket type (`research`/`prototype`/`grilling`/`task`); a `Status:` line records `claimed`/`resolved`.
-- **Blocking**: a `Blocked by: NN, NN` line near the top. A ticket is unblocked when every file it lists is `resolved`.
-- **Frontier**: scan `.scratch/<effort>/issues/` for files that are open, unblocked, and unclaimed; first by number wins.
-- **Claim**: set `Status: claimed` and save before any work.
-- **Resolve**: append the answer under an `## Answer` heading, set `Status: resolved`, then append a context pointer (gist + link) to the map's Decisions-so-far in `map.md`.
-
-## Features desta aula
-
-Os slugs esperados seguem o checklist do `../SCOPE.md`: o homework é `.scratch/knowledge-expansion/` (spec + tickets pré-produzidos, status `ready-for-agent`); as features gravadas (`.scratch/event-broker/`, `.scratch/world-advisor/`) só recebem artefatos durante a gravação.
+Read it as in **Read an issue** above.

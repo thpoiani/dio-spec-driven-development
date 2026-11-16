@@ -163,7 +163,7 @@ hands-on/game-copilot/
 │   ├── playthroughs/      # casual.ts · completionist.ts · speedrunner.ts
 │   └── ui/                # console
 ├── tests/                 # testes por componente (fitas determinísticas)
-└── .scratch/              # tracker markdown (issues das features)
+└── docs/agents/           # tracker GitHub Issues · labels · domain docs
 ```
 
 ## 4. Contratos

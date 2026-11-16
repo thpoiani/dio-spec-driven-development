@@ -16,8 +16,8 @@ Em conflito entre código e documentos, **os documentos vencem** — e devem ser
 
 - [x] Documentação (SCOPE, ARCHITECTURE, PRESENTATION, este AGENTS.md)
 - [x] Item 1 — scaffold `hands-on/game-copilot/` (TS strict + Vitest, sem deps no core)
-- [x] Item 1b — `@setup-matt-pocock-skills` na subpasta (tracker local markdown `.scratch/<feature>/`, mesmos triage labels, single-context: `GLOSSARY.md` + `docs/adr/`)
-- [~] **Etapa 01 — em andamento**: spec publicada (`.scratch/knowledge-base/spec.md`, `ready-for-human`); pendente: setup manual do OpenWiki + ingestão do detonado (PC do Paulo) + validação contra a Super Mario Wiki
+- [x] Item 1b — `@setup-matt-pocock-skills` na subpasta (tracker **GitHub Issues** + labels de triagem, single-context: `GLOSSARY.md` + `docs/adr/`)
+- [~] **Etapa 01 — em andamento**: spec publicada como **Issue #1** (`ready-for-human`); tickets #2–#7 como sub-issues com dependências nativas. Pendente: setup manual do OpenWiki + ingestão do detonado (PC do Paulo) + validação contra a Super Mario Wiki
 - [ ] Etapa 02 — eventos + interface `EventBus` + `InMemoryEventBus`
 - [ ] Etapa 03 — `knowledge-loader`: OKF → `KnowledgeIndex` (fail fast)
 - [ ] Etapa 04 — `PlayerProfiler` (casual/completionist/speedrunner) + `ProgressionAdvisor`
@@ -27,7 +27,7 @@ Em conflito entre código e documentos, **os documentos vencem** — e devem ser
 
 ## Fluxo de trabalho por etapa
 
-1. **Uma etapa por vez, na ordem dos estágios 01→10** (tabela no `SCOPE.md` §6). Cada estágio = uma branch numerada, **empilhada sobre a anterior** (nasce da branch do estágio anterior), com spec própria em `.scratch/<slug>/` e commits atômicos que contam a história (spec → tickets → código). **Nenhuma branch é deletada e nada vai para a `main` até o cenário final** — o merge final é feito pelo Thiago. Tags `v0.1` … `v1.0` por estágio.
+1. **Uma etapa por vez, na ordem dos estágios 01→10** (tabela no `SCOPE.md` §6). Cada estágio = uma branch numerada, **empilhada sobre a anterior** (nasce da branch do estágio anterior), com **spec própria como Issue no GitHub** (issue-pai + tickets como sub-issues com dependências nativas) e commits atômicos que contam a história (spec → tickets → código). **Nenhuma branch é deletada e nada vai para a `main` até o cenário final** — o merge final é feito pelo Thiago. PRs de cada etapa ficam abertos (base = branch anterior) para os alunos analisarem. Tags `v0.1` … `v1.0` por estágio.
 2. **Features 01 e 02 são gravadas ao vivo**: ao executá-las em sessão de desenvolvimento, siga o ciclo completo das Skills do Matt Pocock na subpasta — `@grill-with-docs` → `@to-spec` → `@to-tickets` → `@implement` (dirigindo `@tdd`, fechando com `@code-review`) → `@retro`. O Thiago **responde as perguntas com decisões reais** (postura da aula 2 — diferente da aula 1, em que aceitava recomendações).
 3. Os **estágios 08 (broker) e 09 (agente)** só existem como *gravação* — se estiver trabalhando neles fora de gravação, pare no preparo dos artefatos e confirme com o Thiago.
 

@@ -76,7 +76,7 @@
 **Tela**: slides.
 
 - Recap (a versão "elevador"): a spec é o contrato que sobrevive à sessão; o que você não diz, o agente inventa; SDD serve para feature nova, arquitetura e agente; a base de conhecimento também tem spec (o schema da wiki).
-- **Homework para os alunos**: `feature/10-knowledge-expansion` — a spec + tickets já estão em `.scratch/knowledge-expansion/` no repo; o desafio é expandir o mundo (Star Road / Special Zone) na wiki e rodar o ciclo completo sozinho.
+- **Homework para os alunos**: `feature/10-knowledge-expansion` — a spec + tickets já estarão publicados como Issues no GitHub (repo do curso); o desafio é expandir o mundo (Star Road / Special Zone) na wiki e rodar o ciclo completo sozinho.
 - Convite: escolha a ferramenta que preferir (Spec Kit, OpenSpec, Skills) e transforme o próximo prompt vago em spec. Links no closing.
 
 ## 4. Esqueleto de slides (~24, template dio-slides)
@@ -116,7 +116,7 @@ Parte 05 · encerramento
 - [ ] Estágios 01–07 em branches empilhadas (wiki + core + observabilidade) — demo dos 3 playthroughs estável
 - [ ] `@setup-matt-pocock-skills` rodado em `hands-on/game-copilot/` (tracker local, single-context)
 - [ ] Wiki OpenWiki completa e `openwiki visualize` exportado para o slide
-- [ ] Spec + tickets do homework em `.scratch/knowledge-expansion/` (status `ready-for-agent`)
+- [ ] Spec + tickets do homework publicados como Issues (`ready-for-agent`)
 - [ ] Mosquitto + `npm run demo` testados na máquina de gravação
 - [ ] Chave do provider LLM do agente configurada e testada
 - [ ] Deck gerado com `dio-slides` e revisado contra este roteiro
