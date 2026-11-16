@@ -44,3 +44,7 @@ Cada pasta é **autocontida**: README com a análise completa (as 8 ambiguidades
 ## Curso
 
 A apresentação completa — o que é SDD, o panorama das ferramentas (Spec Kit, OpenSpec, BMAD, Kiro, Matt Pocock Skills) e a comparação passo a passo — está no curso de mesmo nome na [DIO](https://www.dio.me).
+
+## Aula 2 — hands-on
+
+O desenvolvimento prático da segunda aula (Game Copilot: telemetria de gameplay → MQTT → regras + agente → recomendações) vive em repositório dedicado, com estágios, issues e PRs abertos para acompanhamento: [thpoiani/dio-spec-driven-development-hands-on](https://github.com/thpoiani/dio-spec-driven-development-hands-on).
