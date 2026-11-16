@@ -17,8 +17,7 @@
 | Entrevista ao vivo | O `@grill-with-docs` é gravado ao vivo: Thiago **responde com decisões de negócio reais** (contraponto da aula 1) |
 | Terminal acelerado | `@implement`/`@tdd`/`@code-review` gravados separadamente e **acelerados na edição**; a narração entra por cima |
 | Demos rodam de verdade | Mosquitto + `npm run demo` em tempo real; se falhar, cortar para a fita acelerada |
-| Pontos de corte | Se a Feature 1 passar de ~15', a Feature 2 vira demo acelerada; o homework nunca é gravado |
-| Postura | Nunca oferecer regras que não foram perguntadas — responder o que foi perguntado, com decisão própria |
+| Pontos de corte | Se a Feature 1 passar de ~15', a Feature 2 vira demo acelerada; o homework nunca é gravado || Postura | Nunca oferecer regras que não foram perguntadas — responder o que foi perguntado, com decisão própria |
 | Setup | `@setup-matt-pocock-skills` já rodado na subpasta (1 slide menciona, como o slide 17 da aula 1) |
 
 ## 3. Roteiro por bloco
@@ -44,7 +43,7 @@
 - Demo (tempo real): `npm run demo` — as três fitas (`casual`, `completionist`, `speedrunner`) e o momento mágico: o casual entra em **loop na Forest of Illusion** e o ProgressionAdvisor aponta a saída secreta.
 - Fechar: "o sistema já recomenda. Agora vamos evoluir ele — com spec, não com chute."
 
-### Bloco C · Feature 1: `01-event-broker` — SDD para infraestrutura (~15')
+### Bloco C · Feature 1 (etapa 08): `event-broker` — SDD para infraestrutura (~15')
 
 **Objetivo**: mostrar que SDD não é só para feature nova — é para evolução de arquitetura.
 **Tela**: grill ao vivo → artefatos na tela → implementação acelerada → demo.
@@ -55,7 +54,7 @@
 - Artefatos na tela: spec (com o non-goal "sem persistência"), tickets com dependências, glossário recebendo "broker", "tópico", "telemetria de gameplay".
 - Implementação acelerada (TDD + code-review) → demo real: `docker compose up` + `npm run demo` com o Mosquitto logando os tópicos — "a mesma demo de antes, agora fluindo por um broker de verdade."
 
-### Bloco D · Feature 2: `02-world-advisor-agent` — SDD para agentes (~20')
+### Bloco D · Feature 2 (etapa 09): `world-advisor` — SDD para agentes (~20')
 
 **Objetivo**: o mesmo ciclo para um comportamento não-determinístico — SDD para agentes.
 **Tela**: grill ao vivo (o mais rico da aula) → artefatos → implementação acelerada → demo lado a lado.
@@ -77,7 +76,7 @@
 **Tela**: slides.
 
 - Recap (a versão "elevador"): a spec é o contrato que sobrevive à sessão; o que você não diz, o agente inventa; SDD serve para feature nova, arquitetura e agente; a base de conhecimento também tem spec (o schema da wiki).
-- **Homework para os alunos**: `feature/03-knowledge-expansion` — a spec + tickets já estão em `.scratch/knowledge-expansion/` no repo; o desafio é expandir o mundo (Star Road / Special Zone) na wiki e rodar o ciclo completo sozinho.
+- **Homework para os alunos**: `feature/10-knowledge-expansion` — a spec + tickets já estão em `.scratch/knowledge-expansion/` no repo; o desafio é expandir o mundo (Star Road / Special Zone) na wiki e rodar o ciclo completo sozinho.
 - Convite: escolha a ferramenta que preferir (Spec Kit, OpenSpec, Skills) e transforme o próximo prompt vago em spec. Links no closing.
 
 ## 4. Esqueleto de slides (~24, template dio-slides)
@@ -105,7 +104,7 @@ Parte 04 · feature 02: SDD para agentes
  23 demo           mesmo evento, dois consumidores: regras + agente citando a wiki
 Parte 05 · encerramento
  25 recap          spec é contrato · não disse = inventou · infra e agente no mesmo ciclo
- 26 homework       feature/03-knowledge-expansion com spec pronta no repo
+ 26 homework       feature/10-knowledge-expansion com spec pronta no repo
  27 referências    OpenWiki · OKF · Skills · Mosquitto · cleanyour.tv
  28 convite        transforme o próximo prompt vago em spec
 ```
@@ -114,7 +113,7 @@ Parte 05 · encerramento
 
 ## 5. Checklist pré-gravação
 
-- [ ] `feature/00-core` mergeada e taggeada (`v0.1-core`) — demo dos 3 playthroughs estável
+- [ ] Estágios 01–07 em branches empilhadas (wiki + core + observabilidade) — demo dos 3 playthroughs estável
 - [ ] `@setup-matt-pocock-skills` rodado em `hands-on/game-copilot/` (tracker local, single-context)
 - [ ] Wiki OpenWiki completa e `openwiki visualize` exportado para o slide
 - [ ] Spec + tickets do homework em `.scratch/knowledge-expansion/` (status `ready-for-agent`)

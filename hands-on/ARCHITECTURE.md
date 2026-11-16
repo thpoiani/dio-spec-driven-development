@@ -60,8 +60,8 @@ Princípios:
 ### 2.2 `event-bus` (a seam do sistema)
 
 - **Interface `EventBus`**: `publish(topic, event)` / `subscribe(topic, handler)`, tipada por evento.
-- **`InMemoryEventBus`**: usado nos testes e no demo sem docker. Permanece após a Feature 1 — a interface é o que permite trocar o transporte sem tocar nos consumidores (lição da Feature 1: a seam acordada na spec).
-- **`MqttEventBus`** (Feature 1): implementação sobre `mqtt.js` conectada ao Mosquitto; mapeia eventos para tópicos (§4).
+- **`InMemoryEventBus`**: usado nos testes e no demo sem docker. Permanece após a etapa 08 — a interface é o que permite trocar o transporte sem tocar nos consumidores (lição da etapa 08: a seam acordada na spec).
+- **`MqttEventBus`** (etapa 08): implementação sobre `mqtt.js` conectada ao Mosquitto; mapeia eventos para tópicos (§4).
 
 ### 2.3 `player-profiler` (determinístico)
 
@@ -84,7 +84,7 @@ Princípios:
   - **Gating detectado**: chegou numa área cujo acesso depende de Switch Palace/saída secreta não concluída → recomenda concluir o pré-requisito (o *momento da demo*: Forest of Illusion, §6).
   - **Power-up**: antes de `boss_engaged`, sugere o power-up certo se o inventário não o tem (ex.: Cape Feather para castelo).
 
-### 2.5 `world-advisor` (agente LangChain — Feature 2)
+### 2.5 `world-advisor` (agente LangChain — etapa 09)
 
 - **O que é**: agente LLM que é mais um consumidor do broker. Recebe telemetria + perfil, **consulta a wiki** e publica recomendações ricas em linguagem natural.
 - **Ferramentas**: `openwiki_search` / `openwiki_read` (ferramentas locais, read-only, sem chamada de modelo do OpenWiki) ou leitura direta das páginas `openwiki/` — decisão acordada na spec da feature.
@@ -159,7 +159,7 @@ hands-on/game-copilot/
 │   ├── profiler/          # PlayerProfiler
 │   ├── advisors/
 │   │   ├── progression/   # regras (v1)
-│   │   └── world/         # agente LangChain (feature/02)
+│   │   └── world/         # agente LangChain (feature/09)
 │   ├── playthroughs/      # casual.ts · completionist.ts · speedrunner.ts
 │   └── ui/                # console
 ├── tests/                 # testes por componente (fitas determinísticas)
@@ -208,7 +208,7 @@ Estrutura real simplificada para caber em aula (~5 áreas principais + camada se
 | **Forest of Illusion** | Fases com **múltiplas saídas** (labirinto: sem a saída secreta certa, repete-se a área), Forest Switch Palace, **Roy's Castle** | O **momento da demo**: casual entra em loop na floresta |
 | **Chocolate Island** | Fases, Chocolate Secret, **Wendy's Castle** | Boss libera o acesso ao Valley of Bowser |
 | **Valley of Bowser** | Fases 1–4, **Larry's Castle** (final) | Fim do caminho principal |
-| **Star Road → Special Zone** | Acesso só por **secret exits/keyholes**; 8 níveis especiais | Conteúdo do completionist; expansão do homework (`feature/03`) |
+| **Star Road → Special Zone** | Acesso só por **secret exits/keyholes**; 8 níveis especiais | Conteúdo do completionist; expansão do homework (`feature/10`) |
 
 Power-ups como "equipamento": **Cape Feather** (voo — ideal para castelos), **Fire Flower**, **Yoshi** — o `WorldAdvisor`/ProgressionAdvisor sugerem qual levar ao `boss_engaged`.
 
@@ -220,10 +220,10 @@ Power-ups como "equipamento": **Cape Feather** (voo — ideal para castelos), **
 | **completionist.ts** | Secret exits, Switch Palaces, Dragon Coins, inventário constante, revisita áreas | Perfil `completionist`; dicas do que falta coletar por área; caminho para a Star Road |
 | **speedrunner.ts** | Deltas curtos, direto aos castelos (Iggy → Ludwig → Roy → Wendy → Larry), zero desvios | Perfil `speedrunner`; ProgressionAdvisor dá o próximo objetivo; WorldAdvisor sugere rota otimizada |
 
-`npm run demo` executa as três em sequência (ou por parâmetro) contra o broker Mosquitto (Feature 1 em diante) — antes disso, roda com `InMemoryEventBus`.
+`npm run demo` executa as três em sequência (ou por parâmetro) contra o broker Mosquitto (etapa 08 em diante) — antes disso, roda com `InMemoryEventBus`.
 
 ## 7. Testes
 
 - **Unitários por componente** com `InMemoryEventBus` e fitas mínimas: profiler (sinais → perfil), progression (gating → recomendação), loader (frontmatter → índice; campo faltante = erro de schema da wiki).
 - **Contrato de eventos**: schema/tipo compartilhado — quebrar o payload quebra o build.
-- **Evals do agente** (Feature 2): casos evento+perfil → dica esperada, com as páginas da wiki como gabarito; fora do caminho crítico.
+- **Evals do agente** (etapa 09): casos evento+perfil → dica esperada, com as páginas da wiki como gabarito; fora do caminho crítico.

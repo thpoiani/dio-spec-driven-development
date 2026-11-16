@@ -52,20 +52,28 @@ Para a aula, o jogo é **Super Mario World** (reconhecimento imediato da plateia
 - ❌ Broker Kafka/RabbitMQ — overkill; Mosquitto de uma linha.
 - ❌ O agente reagir a **cada** evento — só a eventos relevantes (`area_entered`, `boss_engaged`, `profile_changed`), com throttle.
 
-## 6. Features e branches
+## 6. Estágios e branches
 
-| Branch | Conteúdo | Quando | Tag |
-|---|---|---|---|
-| `feature/00-core` | Scaffold TS strict + Vitest; eventos + interface `EventBus` + `InMemoryEventBus`; wiki OpenWiki de SMW + loader; `PlayerProfiler` + `ProgressionAdvisor`; 3 playthroughs + `npm run demo`; testes | Offline (pré-gravação) | `v0.1-core` |
-| `feature/01-event-broker` | Migração do fluxo de eventos para MQTT/Mosquitto guiada por SDD; `InMemoryEventBus` permanece para testes | Gravada ao vivo | `v0.2-broker` |
-| `feature/02-world-advisor-agent` | `WorldAdvisor`: agente LangChain consumindo o broker e consultando a wiki (SDD para agentes) | Gravada ao vivo | `v0.3-agent` |
-| `feature/03-knowledge-expansion` | Expansão do mundo na wiki (Star Road / Special World) com spec + tickets pré-produzidos em `.scratch/` | **Homework** dos alunos | `v0.4-expansion` |
+O desenvolvimento acontece em **10 estágios**, um por branch (empilhados: cada estágio nasce do anterior), cada um com spec própria em `.scratch/<slug>/`. **Nada vai para a `main` até o cenário final** — incluindo o que será gravado; o merge final é feito pelo Thiago. Branches **nunca são deletadas**: a lista numerada conta a história do projeto para quem acompanhar o curso.
+
+| # | Branch | Spec (`.scratch/`) | Entregável | Quando | Tag |
+|---|---|---|---|---|---|
+| 01 | `feature/01-knowledge-base` | `knowledge-base/` | Setup OpenWiki (manual) + detonado → `openwiki/` OKF | Offline, com apoio do agente | `v0.1` |
+| 02 | `feature/02-events-bus` | `events-bus/` | Tipos de evento + interface `EventBus` + `InMemoryEventBus` | Offline | `v0.2` |
+| 03 | `feature/03-knowledge-loader` | `knowledge-loader/` | OKF → `KnowledgeIndex` (fail fast) + fixtures | Offline | `v0.3` |
+| 04 | `feature/04-player-profiler` | `player-profiler/` | Profiler (3 perfis) + `game/profile_changed` | Offline | `v0.4` |
+| 05 | `feature/05-progression-advisor` | `progression-advisor/` | Regras + `game/recommendations` | Offline | `v0.5` |
+| 06 | `feature/06-playthroughs-demo` | `playthroughs-demo/` | 3 fitas + `--speed` + console + `npm run demo` | Offline | `v0.6` |
+| 07 | `feature/07-observability` | `observability/` | OTel (traces por sessionId) + OpenObserve | Offline | `v0.7` |
+| 08 | `feature/08-event-broker` | `event-broker/` | `MqttEventBus` + Mosquitto (docker-compose) | **Gravada ao vivo** | `v0.8` |
+| 09 | `feature/09-world-advisor` | `world-advisor/` | `WorldAdvisor`: agente LangChain consultando a wiki | **Gravada ao vivo** | `v0.9` |
+| 10 | `feature/10-knowledge-expansion` | `knowledge-expansion/` | Expansão do mundo (Star Road / Special Zone) — spec + tickets pré-produzidos | **Homework** dos alunos | `v1.0` |
 
 Regras de repositório:
 
-- Projeto em `hands-on/game-copilot/` deste repo; branches **preservadas após o merge** para os alunos navegarem o histórico; `main` sempre com o conteúdo final (deploy do GitHub Pages não muda).
-- `@setup-matt-pocock-skills` na subpasta **antes da gravação**: issue tracker local markdown (`.scratch/<feature>/`), mesmos triage labels, single-context (`GLOSSARY.md` + `docs/adr/`).
-- O professor grava as duas features passando pelo ciclo completo; a entrevista (`@grill`) é ao vivo e o terminal é acelerado na edição.
+- Projeto em `hands-on/game-copilot/` deste repo; branches **empilhadas e nunca deletadas**; `main` **congelada** até o cenário final (incluindo as gravações) — o merge final é feito pelo Thiago, e os alunos navegam o histórico pelas branches numeradas.
+- `@setup-matt-pocock-skills` na subpasta ✅ antes da gravação (issue tracker local markdown, mesmos triage labels, single-context).
+- Os estágios 08 e 09 são gravados passando pelo ciclo completo das skills; a entrevista (`@grill`) é ao vivo e o terminal é acelerado na edição.
 
 ## 7. Roteiro da gravação (resumo)
 
@@ -73,23 +81,23 @@ Regras de repositório:
 |---|---|---|
 | Abertura | 15' | Gancho GTA VI (19/11) + tendência TV + use case + non-goals |
 | Tour do core | 10' | Arquitetura, base de conhecimento, demo dos 3 playthroughs |
-| Feature 1 | ~15' | `01-event-broker` — SDD para infraestrutura |
-| Feature 2 | ~20' | `02-world-advisor-agent` — SDD para agentes |
-| Encerramento | 5' | Recap, homework (`feature/03`), convite |
+| Feature 1 (etapa 08) | ~15' | `event-broker` — SDD para infraestrutura |
+| Feature 2 (etapa 09) | ~20' | `world-advisor` — SDD para agentes |
+| Encerramento | 5' | Recap, homework (`feature/10`), convite |
 
 Detalhe completo (falas, telas, cortes): [PRESENTATION.md](./PRESENTATION.md).
 
 ## 8. Checklist de execução
 
-0. ✅ `hands-on/SCOPE.md` (este documento) + documentação de arquitetura e apresentação
-1. Scaffold `hands-on/game-copilot/` (TS strict, Vitest, sem deps no core) + `@setup-matt-pocock-skills`
-2. Tipos de evento + interface `EventBus` + `InMemoryEventBus`
-3. Base de conhecimento: `openwiki/` de Super Mario World (OKF v0.2, curada a partir de detonado) + loader de frontmatter
-4. `PlayerProfiler` (3 perfis) + `ProgressionAdvisor` (regras) + payload de recomendação
-5. 3 playthroughs (`casual`, `completionist`, `speedrunner`) + `npm run demo` + testes por componente → merge `feature/00-core` → tag `v0.1-core`
-6. Spec + tickets pré-produzidos do homework em `.scratch/knowledge-expansion/`
-7. Gravação das features 01 e 02 (ciclo completo das skills)
-8. Outline + deck com a skill `dio-slides`
+0. ✅ Documentação (`SCOPE.md`, `ARCHITECTURE.md`, `PRESENTATION.md`, `AGENTS.md`)
+1. ✅ Scaffold `hands-on/game-copilot/` + `@setup-matt-pocock-skills`
+2. ✅ Spec da etapa 01 publicada (`.scratch/knowledge-base/spec.md`)
+3. [ ] **Etapa 01** — wiki OpenWiki de SMW (setup manual + ingestão/curadoria com apoio do agente)
+4. [ ] **Etapas 02–06** — eventos/bus · loader · profiler · advisor · playthroughs/demo (uma spec por componente)
+5. [ ] **Etapa 07** — observabilidade (OTel + OpenObserve)
+6. [ ] **Etapa 10** — spec + tickets do homework pré-produzidos (`ready-for-agent`)
+7. [ ] Gravação das etapas 08 e 09 (ciclo completo das skills, terminal acelerado)
+8. [ ] Outline + deck com a skill `dio-slides`
 
 ## 9. Referências
 
